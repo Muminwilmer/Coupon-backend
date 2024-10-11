@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const fs = require('fs')
 
 // Middleware to parse JSON bodies from requests
 app.use(express.json());
@@ -45,8 +46,27 @@ app.get('*', (req, res, next) => {
   // Send the file if it exists, otherwise forward the request to 404 handler
   res.sendFile(folderPath, (err) => {
     if (err) {
-      console.log('File not found, serving 404 cat image.');
-      res.sendFile(path.join(__dirname, '404', '404.jpg'))
+      console.log('File not found, serving random cat image.');
+  
+      // Read the files in the directory
+      fs.readdir(path.join(__dirname, '404'), (err, files) => {
+        // Filter for .jpg or .png files (or whatever formats you have)
+        const catImages = files.filter(file => 
+          file.endsWith('.jpg') || file.endsWith('.png')
+        );
+
+        // Select a random cat image
+        const randomIndex = Math.floor(Math.random() * catImages.length);
+        const randomCatImage = catImages[randomIndex];
+  
+        // Send the random cat image
+        res.sendFile(path.join(__dirname, '404', randomCatImage), (err) => {
+          if (err) {
+            console.error('Error sending random cat image.', err);
+            res.sendFile(path.join(__dirname, '404', '404.jpg')); // Fallback to default image
+          }
+        });
+      });
     }
   });
 });
