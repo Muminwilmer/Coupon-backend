@@ -1,0 +1,132 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>title</title>
+  <style>
+    /* Basic styles for the input and button */
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+
+    input {
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 200px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      font-size: 100%;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 1s;
+    }
+
+    button:hover {
+      padding: 10px 20px;
+      background-color: #003670;
+      font-size: 110%;
+      transition: background-color 0.1s;
+    }
+
+    button.flash-green {
+      animation: flash-green 1s linear;
+    }
+
+    button.flash-red {
+      animation: flash-red 1s linear;
+    }
+
+    button.flash-size {
+      animation: flash-size 1s linear;
+    }
+
+    @keyframes flash-green {
+      0% {
+        background-color: #28a745; /* Green */
+      }
+      100% {
+        background-color: #007bff; /* Original color */
+      }
+    }
+
+    @keyframes flash-red {
+      0% {
+        background-color: #dc3545; /* Red */
+      }
+      100% {
+        background-color: #007bff; /* Original color */
+      }
+    }
+  </style>
+</head>
+<body>
+  <input placeholder="Phone number here :P" value=""></input>
+
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+
+</body>
+</html>
+<script>
+  async function pressButton(button){
+    const [domain, page, postPhone, postSms, postEmail, postLastName, postName] = JSON.parse(button.id)
+    const phoneValue = document.querySelector('input').value;
+    if (!phoneValue) {
+      await button.classList.add('flash-red');
+      await setTimeout(() => button.classList.remove('flash-red'), 2000);
+      alert("You haven't added a phone number yet!")
+      return;
+    }
+    try {
+      const response = await fetch(`/qualifioapp/`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ domain:domain, pageUrl:page, formData:{
+          suivant2: "safarisadness",
+          [postName]: "Erik",
+          [postLastName]: "Andersson",
+          [postEmail]: Math.round(Math.random()*1000000)+"@gmail.com",
+          [postPhone]: phoneValue,
+          [postSms]: "sms",
+          questionset: 2,
+          scenario: "undefined",
+          qlfQs: "https://pagen.se/lantgoda-smakrabatt/",
+          suivant2: "Skicka",
+        } }),
+      })
+
+      if (response.ok) {
+          // Flash green on success
+          button.classList.add('flash-green');
+          setTimeout(() => button.classList.remove('flash-green'), 1000);
+        } else {
+          // Flash red on failure
+          button.classList.add('flash-red');
+          setTimeout(() => button.classList.remove('flash-red'), 1000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        // Flash red on catch error
+        button.classList.add('flash-red');
+        setTimeout(() => button.classList.remove('flash-red'), 1000);
+      }
+
+  }
+</script>
