@@ -36,40 +36,64 @@ app.post('/qualifioapp/', async (req, res) => {
   }
 });
 
+app.get('/404*', (req, res, next) => {
+  fs.readdir(path.join(__dirname, 'public', '404'), (err, files) => {
+    // Filter for .jpg or .png files (or whatever formats you have)
+    const catImages = files.filter(file => 
+      file.endsWith('.jpg') || file.endsWith('.png')
+    );
+
+    // Select a random cat image
+    const randomIndex = Math.floor(Math.random() * catImages.length);
+    const randomCatImage = catImages[randomIndex];
+    console.log(randomCatImage)
+    res.send(`
+      <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>404 Not Found</title>
+              <style>
+                  body {
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100vh;
+                      margin: 0;
+                      background-color: #000000;
+                  }
+                  img {
+                      max-width: 100%;
+                      max-height: 100%;
+                  }
+              </style>
+          </head>
+          <body>
+              <img src="${randomCatImage}?${Math.floor(Math.random()*10000)}" alt="Random Cat Image" />
+          </body>
+      </html>
+    `);
+  });
+});
+
+
 app.get('*', (req, res, next) => {
   const folder = req.params['0'];
   console.log(folder)
-
+  if (folder.includes("404"))return;
   // Construct the path to the requested folder's index.html
   const folderPath = path.join(__dirname, 'public', folder, 'index.html');
   console.log(folderPath)
   // Send the file if it exists, otherwise forward the request to 404 handler
   res.sendFile(folderPath, (err) => {
     if (err) {
-      console.log('File not found, serving random cat image.');
-  
-      // Read the files in the directory
-      fs.readdir(path.join(__dirname, '404'), (err, files) => {
-        // Filter for .jpg or .png files (or whatever formats you have)
-        const catImages = files.filter(file => 
-          file.endsWith('.jpg') || file.endsWith('.png')
-        );
-
-        // Select a random cat image
-        const randomIndex = Math.floor(Math.random() * catImages.length);
-        const randomCatImage = catImages[randomIndex];
-  
-        // Send the random cat image
-        res.sendFile(path.join(__dirname, '404', randomCatImage), (err) => {
-          if (err) {
-            console.error('Error sending random cat image.', err);
-            res.sendFile(path.join(__dirname, '404', '404.jpg')); // Fallback to default image
-          }
-        });
-      });
+      console.log('File not found, sending to 404');
+      res.redirect(`/404/${folder.replace("/","")}`);
     }
   });
 });
+
+
 
 // Start the server
 app.listen(PORT, () => {
