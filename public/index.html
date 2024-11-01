@@ -74,13 +74,22 @@
 <body>
   <input placeholder="Phone number here :P" value=""></input>
 
-  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384"]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["pagen", "lantgoda-smakrabatt", "choix_2281395", "choix_2334407", "choix_2281386", "choix_2281385", "choix_2281384", ""]' onclick="pressButton(this)">Pågen bröd</button>
+  <button id='["www.ica", "eriks-saser", "choix_2647574", "choix_2647579", false, false, false, "kupong/"]' onclick="pressButton(this)">Eriks såser</button>
   <button id='' onclick="window.open(`./404/`,`_blank`)">Home button</button>
 </body>
 </html>
 <script>
   async function pressButton(button){
-    const [domain, page, postPhone, postSms, postEmail, postLastName, postName] = JSON.parse(button.id)
+    const [domain, page, postPhone, postSms, postEmail, postLastName, postName, extraPage] = JSON.parse(button.id)
+    console.log("Domain:", domain);
+    console.log("Page:", page);
+    console.log("Post Phone:", postPhone);
+    console.log("Post SMS:", postSms);
+    console.log("Post Email:", postEmail);
+    console.log("Post Last Name:", postLastName);
+    console.log("Post Name:", postName);
+    console.log("Extra Page:", extraPage);
     const phoneValue = document.querySelector('input').value;
     if (!phoneValue) {
       await button.classList.add('flash-red');
@@ -89,23 +98,36 @@
       return;
     }
     try {
+      const bodyForm = {};
+      if (postName) {
+        bodyForm[postName] = "Erik";
+      }
+      if (postLastName) {
+        bodyForm[postLastName] = "Andersson";
+      }
+      if (postEmail) {
+        bodyForm[postEmail] = Math.round(Math.random() * 1000000) + "@gmail.com";
+      }
+      if (postPhone) {
+        bodyForm[postPhone] = phoneValue;
+      }
+      if (postSms) {
+        bodyForm[postSms] = "sms";
+      }
+
+      bodyForm.suivant2 = "safarisadness";
+      bodyForm.questionset = 2;
+      bodyForm.scenario = "undefined";
+      bodyForm.qlfQs = `https://${domain}.se/${page}/`;
+
       const response = await fetch(`/qualifioapp/`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ domain:domain, pageUrl:page, formData:{
-          suivant2: "safarisadness",
-          [postName]: "Erik",
-          [postLastName]: "Andersson",
-          [postEmail]: Math.round(Math.random()*1000000)+"@gmail.com",
-          [postPhone]: phoneValue,
-          [postSms]: "sms",
-          questionset: 2,
-          scenario: "undefined",
-          qlfQs: "https://pagen.se/lantgoda-smakrabatt/",
-          suivant2: "Skicka",
-        } }),
+        body: JSON.stringify({ 
+          domain:domain, pageUrl:page, extraPage:extraPage, formData: bodyForm
+        }),
       })
 
       if (response.ok) {
